@@ -25,8 +25,9 @@ public class Main {
                     learnData.add(new DataItem(items[0], items[1], items[2]));
                 }
             }
-            SVD svd = new SVD();
+            SVD svd = new SVD(8);
             svd.learn(learnData);
+
             PrintWriter out = new PrintWriter(new File(OUTPUT_FILE));
             FastScanner in = new FastScanner(new File(TEST_INPUT_FILE));
             in.nextLine();

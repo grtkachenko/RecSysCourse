@@ -7,8 +7,9 @@ import java.util.Map;
  * Date: 22.11.2014
  */
 public class SVD {
-    private final static int FACTORS_NUM = 3;
-    private final static double EPS = 1e-3;
+    private final static int MAX_ITERATIONS = 10;
+    private final static double EPS = 1e-5;
+    private final int factorsNum;
     private double mu = 0;
     private double gamma = 0.01;
     private double lambda = 0.01;
@@ -19,8 +20,8 @@ public class SVD {
     private Map<Long, Double> bv = new HashMap<Long, Double>();
     private Map<Long, double[]> fv = new HashMap<Long, double[]>();
 
-    private Map<Long, Map<Long, Long>> rating = new HashMap<Long, Map<Long, Long>>();
-    public SVD() {
+    public SVD(int factorsNum) {
+        this.factorsNum = factorsNum;
     }
 
     public void learn(List<DataItem> items) {
@@ -44,15 +45,18 @@ public class SVD {
                 mu += gerr;
                 bu.put(u, bu.get(u) + gerr - gl * bu.get(u));
                 bv.put(v, bv.get(v) + gerr - gl * bv.get(v));
-                for (int i = 0; i < FACTORS_NUM; i++) {
+                for (int i = 0; i < factorsNum; i++) {
                     fu.get(u)[i] += gerr * fv.get(v)[i] - gl * fu.get(u)[i];
                     fv.get(v)[i] += gerr * fu.get(u)[i] - gl * fv.get(v)[i];
                 }
             }
             iteration++;
             rmse = Math.sqrt(rmse / items.size());
-            System.out.println("Iteration " + iteration + " : RMSE " + rmse);
             gamma *= 0.95;
+            System.out.println(iteration + " RMSE " + rmse);
+            if (iteration >= MAX_ITERATIONS) {
+                break;
+            }
         }
     }
 
@@ -67,11 +71,11 @@ public class SVD {
     private void addItem(DataItem item) {
         if (!bu.containsKey(item.getUserId())) {
             bu.put(item.getUserId(), .0);
-            fu.put(item.getUserId(), new double[FACTORS_NUM]);
+            fu.put(item.getUserId(), new double[factorsNum]);
         }
         if (!bv.containsKey(item.getMovieId())) {
             bv.put(item.getMovieId(), .0);
-            fv.put(item.getMovieId(), new double[FACTORS_NUM]);
+            fv.put(item.getMovieId(), new double[factorsNum]);
         }
     }
 
