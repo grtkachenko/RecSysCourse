@@ -1,5 +1,7 @@
-import java.util.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
     private static final String ROOT_FODLER = "res";
@@ -35,7 +37,7 @@ public class Main {
                     break;
                 }
                 long[] items = parseLongs(nextData);
-                int rating = svd.getRating(new DataItem(items[1], items[2]));
+                double rating = svd.getRating(new DataItem(items[1], items[2]));
                 out.println(items[0] + "," + rating);
             }
             out.close();
