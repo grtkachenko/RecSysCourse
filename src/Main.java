@@ -25,7 +25,7 @@ public class Main {
                     learnData.add(new DataItem(items[0], items[1], items[2]));
                 }
             }
-            SVD svd = new SVD(8);
+            SVD svd = new SVD(3);
             svd.learn(learnData);
 
             PrintWriter out = new PrintWriter(new File(OUTPUT_FILE));

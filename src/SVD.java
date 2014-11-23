@@ -7,11 +7,12 @@ import java.util.Map;
  * Date: 22.11.2014
  */
 public class SVD {
-    private final static int MAX_ITERATIONS = 10;
-    private final static double EPS = 1e-5;
+    private final static int MAX_ITERATIONS = Integer.MAX_VALUE / 2;
+    private final static double EPS = 1e-6;
     private final int factorsNum;
+    private double threshold = 0.01;
     private double mu = 0;
-    private double gamma = 0.01;
+    private double gamma = 0.02;
     private double lambda = 0.01;
 
     private Map<Long, Double> bu = new HashMap<Long, Double>();
@@ -25,8 +26,8 @@ public class SVD {
     }
 
     public void learn(List<DataItem> items) {
-        double oldRmse = 10;
-        double rmse = 0;
+        double oldRmse = 0;
+        double rmse = 1;
         int iteration = 0;
         for (DataItem item : items) {
             addItem(item);
@@ -36,23 +37,24 @@ public class SVD {
             oldRmse = rmse;
             rmse = 0;
 
-            double gl = gamma * lambda;
             for (DataItem curItem: items) {
                 long u = curItem.getUserId(), v = curItem.getMovieId(), r = curItem.getRating();
                 double err = r - mu - bu.get(u) - bv.get(v) - scalMul(fu.get(u), fv.get(v));
                 rmse += err * err;
-                double gerr = gamma * err;
-                mu += gerr;
-                bu.put(u, bu.get(u) + gerr - gl * bu.get(u));
-                bv.put(v, bv.get(v) + gerr - gl * bv.get(v));
+                mu += gamma * err;
+                bu.put(u, bu.get(u) + gamma * (err - lambda * bu.get(u)));
+                bv.put(v, bv.get(v) + gamma * (err - lambda * bv.get(v)));
                 for (int i = 0; i < factorsNum; i++) {
-                    fu.get(u)[i] += gerr * fv.get(v)[i] - gl * fu.get(u)[i];
-                    fv.get(v)[i] += gerr * fu.get(u)[i] - gl * fv.get(v)[i];
+                    fu.get(u)[i] += gamma * (err * fv.get(v)[i] - gamma * lambda  * fu.get(u)[i]);
+                    fv.get(v)[i] += gamma * (err * fu.get(u)[i] - gamma * lambda  * fv.get(v)[i]);
                 }
             }
             iteration++;
             rmse = Math.sqrt(rmse / items.size());
-            gamma *= 0.95;
+            if (rmse > oldRmse - threshold) {
+                gamma *= 0.8;
+                threshold *= 0.6;
+            }
             System.out.println(iteration + " RMSE " + rmse);
             if (iteration >= MAX_ITERATIONS) {
                 break;
