@@ -45,10 +45,10 @@ public class SVD {
                 bu.put(u, bu.get(u) + gamma * (err - lambda * bu.get(u)));
                 bv.put(v, bv.get(v) + gamma * (err - lambda * bv.get(v)));
                 for (int i = 0; i < factorsNum; i++) {
-                    double old_fu = fu.get(u)[i];
-                    double old_fv = fv.get(v)[i];
-                    fu.get(u)[i] += gamma * (err * old_fv - gamma * lambda  * old_fu);
-                    fv.get(v)[i] += gamma * (err * old_fu - gamma * lambda  * old_fv);
+                    double oldFu = fu.get(u)[i];
+                    double oldFv = fv.get(v)[i];
+                    fu.get(u)[i] += gamma * (err * oldFv - gamma * lambda  * oldFu);
+                    fv.get(v)[i] += gamma * (err * oldFu - gamma * lambda  * oldFv);
                 }
             }
             iteration++;
