@@ -47,8 +47,8 @@ public class SVD {
                 for (int i = 0; i < factorsNum; i++) {
                     double oldFu = fu.get(u)[i];
                     double oldFv = fv.get(v)[i];
-                    fu.get(u)[i] += gamma * (err * oldFv - gamma * lambda  * oldFu);
-                    fv.get(v)[i] += gamma * (err * oldFu - gamma * lambda  * oldFv);
+                    fu.get(u)[i] += gamma * (err * oldFv - lambda  * oldFu);
+                    fv.get(v)[i] += gamma * (err * oldFu - lambda  * oldFv);
                 }
             }
             iteration++;
